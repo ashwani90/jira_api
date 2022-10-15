@@ -1,12 +1,14 @@
 from django.urls import path
 
 from . import views
-from .views.project import ProjectView as Project
-from .views.task import TaskView as Task
-from .views.module import ModuleView as Module
+from .views.project import ProjectView 
+from .views.task import TaskView 
+from .views.module import ModuleView 
 
-urlpatterns = [
-    path('project/', Project.as_view(), name='project'),
-    path('task/', Task.as_view(), name='task'),
-    path('module/', Module.as_view(), name='module'),
+from portal.views.module import ModuleView
+from rest_framework.routers import DefaultRouter
+
+
+urlpatterns =  [
+    path('module/', ModuleView.as_view(), name="modules"),
 ]
