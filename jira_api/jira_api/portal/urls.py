@@ -11,4 +11,6 @@ from rest_framework.routers import DefaultRouter
 
 urlpatterns =  [
     path('module/', ModuleView.as_view(), name="modules"),
+    path('project/', ProjectView.as_view(), name="modules"),
+    path('task/', TaskView.as_view(), name="task"),
 ]
