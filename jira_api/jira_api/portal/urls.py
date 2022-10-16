@@ -9,6 +9,7 @@ from .views.user import login_user
 
 from portal.views.module import ModuleView
 from rest_framework.routers import DefaultRouter
+from django.views.decorators.csrf import csrf_exempt
 
 
 urlpatterns =  [

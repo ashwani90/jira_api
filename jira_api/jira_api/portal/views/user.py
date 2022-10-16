@@ -7,6 +7,7 @@ import json
 from django.contrib.auth import authenticate, login
 from rest_framework.decorators import  renderer_classes, api_view
 from rest_framework.renderers import JSONRenderer
+from django.views.decorators.csrf import csrf_exempt
 
 User = get_user_model()
 
@@ -18,7 +19,9 @@ def login_user(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return Response({"status": True})
+        user = User.objects.get(username=user)
+        serializer = UserSerializer(user, many=False)
+        return Response(serializer.data)
     else:
         return Response({"status": False})
 
