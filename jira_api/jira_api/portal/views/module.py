@@ -7,7 +7,14 @@ from portal.helpers.request_response_helper import sendResponse
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 import json
+from portal.helpers.filter_helper import filter_query
 
+filter_fields = [ {"value": "name", "type": "contains"}, 
+                 {"value": "project", "type": "equal"}, 
+                 {"value": "due_date", "type": "range"}, 
+                 {"value": "started_on", "type": "range"}, 
+                 {"value": "status", "type": "equal"}, 
+                 ]
 
 class ModuleView(APIView):
     serializer_class = ModuleSerializer
@@ -28,6 +35,10 @@ class ModuleView(APIView):
         else:
             modules = Module.objects.get(pk=id)
             serializer = ModuleSerializer(modules, many=False)
+        if request.GET.get("custom_filter"):
+            manager = Module.objects
+            projects = filter_query(request,filter_fields,manager)
+            serializer = ModuleSerializer(projects, many=True)
         
         return Response(serializer.data)
         

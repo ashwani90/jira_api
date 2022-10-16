@@ -7,7 +7,17 @@ from portal.helpers.request_response_helper import sendResponse
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 import json
+from django.contrib.auth import get_user_model
+from portal.helpers.filter_helper import filter_query
 
+User = get_user_model()
+
+filter_fields = [ {"value": "name", "type": "contains"}, 
+                 {"value": "status", "type": "equal"}, 
+                 {"value": "due_date", "type": "range"}, 
+                 {"value": "started_on", "type": "range"}, 
+                 {"value": "user", "type": "equal"}, 
+                 ]
 
 class TaskView(APIView):
     serializer_class = TaskSerializer
@@ -27,6 +37,10 @@ class TaskView(APIView):
         else:
             task = Task.objects.get(pk=id)
             serializer = TaskSerializer(task, many=False)
+        if request.GET.get("custom_filter"):
+            manager = Task.objects
+            projects = filter_query(request,filter_fields,manager)
+            serializer = TaskSerializer(projects, many=True)
         
         return Response(serializer.data)
         
@@ -36,7 +50,8 @@ class TaskView(APIView):
             request = request.body.decode('utf-8')
             request = json.loads(request)
             module = Module.objects.get(pk=request['module'])
-            task = Task.objects.create(name=request['name'], description=request['description'], due_date=request['due_date'], started_on=request['started_on'], module=module)
+            user = User.objects.get(pk=request['user'])
+            task = Task.objects.create(name=request['name'], description=request['description'], due_date=request['due_date'], started_on=request['started_on'], module=module, user=user)
             task.save()
             return Response({"status": True})
         except Exception as e:

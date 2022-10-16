@@ -24,6 +24,26 @@ def login_user(request):
         return Response(serializer.data)
     else:
         return Response({"status": False})
+    
+@api_view(('POST',))
+@renderer_classes((JSONRenderer,))
+def register(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    email = request.POST['email']
+    first_name = request.POST['first_name']
+    last_name = request.POST['last_name']
+    user = User.objects.create_user(username, email, password)
+    user.first_name = first_name
+    user.last_name = last_name
+    user.save()
+    if user is not None:
+        login(request, user)
+        user = User.objects.get(username=user)
+        serializer = UserSerializer(user, many=False)
+        return Response(serializer.data)
+    else:
+        return Response({"status": False})
 
 class UserView(APIView):
     serializer_class = UserSerializer
@@ -46,29 +66,16 @@ class UserView(APIView):
             serializer = UserSerializer(user, many=False)
         
         return Response(serializer.data)
-        
-    # @action(detail=True, methods=['post'])
-    # def post(self, request, *args, **kwargs):
-    #     try:
-    #         request = request.body.decode('utf-8')
-    #         request = json.loads(request)
-    #         module = Module.objects.get(pk=request['module'])
-    #         task = Task.objects.create(name=request['name'], description=request['description'], due_date=request['due_date'], started_on=request['started_on'], module=module)
-    #         task.save()
-    #         return Response({"status": True})
-    #     except Exception as e:
-    #         print(e)
-    #         return Response({"status": False})
     
-    # @action(detail=True, methods=['put'])
-    # def put(self, request, *args, **kwargs):
-    #     try:
-    #         request = request.body.decode('utf-8')
-    #         request = json.loads(request)
-    #         update_fields = request['update_fields']
-    #         # Convert Dictionary to positional arguments
-    #         Task.objects.filter(pk=request['id']).update(**update_fields)
-    #         return Response({"status": True})
-    #     except Exception as e:
-    #         print(e)
-    #         return Response({"status": False})
+    @action(detail=True, methods=['put'])
+    def put(self, request, *args, **kwargs):
+        try:
+            request = request.body.decode('utf-8')
+            request = json.loads(request)
+            update_fields = request['update_fields']
+            # Convert Dictionary to positional arguments
+            User.objects.filter(pk=request['id']).update(**update_fields)
+            return Response({"status": True})
+        except Exception as e:
+            print(e)
+            return Response({"status": False})

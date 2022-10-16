@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class Project(models.Model):
     
@@ -14,6 +16,9 @@ class Project(models.Model):
     status = models.CharField(max_length=1, choices=STATUSES)
     due_date = models.DateField(default=None)
     started_on = models.DateField(default=None)
+    users = models.ManyToManyField(
+        User, default=None
+    )
     
     class Meta:
         ordering= ['name']
@@ -30,4 +35,3 @@ class Project(models.Model):
     
     def __str__(self) -> str:
         return super().__str__()
-    

@@ -1,5 +1,8 @@
 from django.db import models
 from .module import Module
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class Task(models.Model):
     
@@ -13,6 +16,7 @@ class Task(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,default=1)
     status = models.CharField(max_length=1, choices=STATUSES, default=1)
     due_date = models.DateField(default=None)
     started_on = models.DateField(default=None)
