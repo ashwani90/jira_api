@@ -32,3 +32,5 @@ class Module(models.Model):
     def __str__(self) -> str:
         return super().__str__()
     
+    def get_tasks(self):
+        self.task_set.all()
